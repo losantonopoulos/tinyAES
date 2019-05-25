@@ -5,15 +5,14 @@
 #include <cinttypes>
 
 // IN #BYTES
-#define BLOCK_128_SIZE 	   16		
+#define BLOCK_128_SIZE 	   16
+#define SMALL_KEY_SIZE		6		
 #define KEY_128_SIZE       16
 #define KEY_128_ROUNDS     10
-#define AES_128_ROWS			4
 #define AES_128_COLUMNS		4
+#define AES_128_ROWS		4
 
-typedef uint8_t byte;
-
-class AES {
+class AES128 {
 	public:
 			
 		/*
@@ -27,7 +26,7 @@ class AES {
 			If you are not about to change the key all the time, you can use
 			the setKey(key) function and then call the encrypt(src,dst) function.
 		*/
-		void encrypt(const byte *temp_key,const byte *src,byte *output);
+		unsigned int encrypt(const uint8_t *temp_key,const uint8_t *src,uint8_t *output, unsigned int n_bytes);
 
 		/*
 			Arguments:
@@ -40,7 +39,7 @@ class AES {
 			If you are not about to change the key all the time, you can use
 			the setKey(key) function and then call the decrypt(src,dst) function.   
 		*/
-		void decrypt(const byte *temp_key,const byte *src,byte *output);
+		unsigned int decrypt(const uint8_t *temp_key,const uint8_t *src,uint8_t *output, unsigned int n_bytes);
 
 		/*
 			Arguments:
@@ -50,7 +49,7 @@ class AES {
 			This is the function which is used for encryption of data 
 			by using the key set with the setkey(key) function.  
 		*/
-		void encrypt(const byte *src,byte *output);
+		unsigned int encrypt(const uint8_t *src,uint8_t *output, unsigned int n_bytes);
 
 		/*
 			Arguments:
@@ -60,7 +59,7 @@ class AES {
 			This is the function which is used for encryption of data 
 			by using the key set with the setkey(key) function.  
 		*/
-		void decrypt(const byte *src,byte *output);
+		unsigned int decrypt(const uint8_t *src,uint8_t *output, unsigned int n_bytes);
 		
 		/*
 			Arguments:
@@ -71,50 +70,57 @@ class AES {
 			or decrypt data. Simply after you set up the key correctly 
 			you can use	encrypt(src,dst) or decrypt(src,dst) function.  
 		*/
-		bool setKey(const byte *key);
+		bool setKey(uint8_t *key);
+
+		bool setUserKey(char *key);
 		
 		/**/
-		void printData(byte *key);
+		void printData(uint8_t *key);
 		
 		/**/
-		AES();
+		AES128();
 
 	private:
 		// PRIVATE VARIABLES
-		byte **expanded_128_key;
-		byte *original_128_key;
+		uint8_t **expanded_128_key;
+		uint8_t *original_128_key;
 		bool initialized = false;
 		bool key_set	  = false;
 
 		// LUTs
-		static const byte rCon[10];
-		static const byte sBox[256];
-		static const byte invSbox[256];
+		static const uint8_t rCon[10];
+		static const uint8_t sBox[256];
+		static const uint8_t invSbox[256];
 
 		// MULTIPLICATION LUTs
-		static const byte multiply_2[256];
-		static const byte multiply_3[256];
-		static const byte multiply_9[256];
-		static const byte multiply_11[256];
-		static const byte multiply_13[256];
-		static const byte multiply_14[256];
+		static const uint8_t multiply_2[256];
+		static const uint8_t multiply_3[256];
+		static const uint8_t multiply_9[256];
+		static const uint8_t multiply_11[256];
+		static const uint8_t multiply_13[256];
+		static const uint8_t multiply_14[256];
 
 		
 		// GENERIC OPERATIONS
-		void expandKey(const byte *original_key,byte **expanded_key);
-		void convertToState(const byte *src,byte **dst);
-		void addKey(const byte *key,byte **dst);
-		void viewKey(byte *key);
-		void view(byte **dst);
+		void expandKey(const uint8_t *original_key,uint8_t **expanded_key);
+		void convertToState(const uint8_t *src,uint8_t **dst);
+		void addKey(const uint8_t *key,uint8_t **dst);
+		void viewKey(uint8_t *key);
+		void view(uint8_t **dst);
 		
 		// ROUND OPERATIONS
-		void substitute(byte **dst);
-		void mixColumns(byte **dst);
-		void shiftRows(byte **dst);
+		void substitute(uint8_t **dst);
+		void mixColumns(uint8_t **dst);
+		void shiftRows(uint8_t **dst);
 
-		void invSubstitute(byte **dst);
-		void invMixColumns(byte **dst);
-		void invShiftRows(byte **dst);		
+		void invSubstitute(uint8_t **dst);
+		void invMixColumns(uint8_t **dst);
+		void invShiftRows(uint8_t **dst);
+
+		void encryptBlock(uint8_t **tmp, const uint8_t *src, uint8_t *dst);
+		void encryptBlock(uint8_t *key,  uint8_t **expandedKey, uint8_t **tmp, const uint8_t *src,uint8_t *dst);
+		void decryptBlock(uint8_t **tmp, const uint8_t *src, uint8_t *dst);
+		void decryptBlock(uint8_t *key,  uint8_t **expandedKey, uint8_t **tmp, const uint8_t *src,uint8_t *dst);
 };
 
 #endif
