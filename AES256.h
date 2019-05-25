@@ -5,11 +5,11 @@
 #include <cinttypes>
 
 // IN #BYTES
-#define BLOCK_256_SIZE 	   16
-#define SMALL_KEY_256_SIZE	6		
-#define KEY_256_SIZE       16
-#define KEY_256_ROUNDS     10
-#define AES_256_COLUMNS		4
+#define BLOCK_256_SIZE		32
+#define SMALL_KEY_256_SIZE	10		
+#define KEY_256_SIZE 		32
+#define KEY_256_ROUNDS 		14
+#define AES_256_COLUMNS		8
 #define AES_256_ROWS		4
 
 class AES256 {
@@ -30,7 +30,7 @@ class AES256 {
 
 		/*
 			Arguments:
-				key		- An 128bit key for encryption
+				key		- An 256bit key for encryption
 				src		- Byte Array[BLOCK_256_SIZE] containing input data
 				dst		- Byte Array[BLOCK_256_SIZE] containing output data
 
