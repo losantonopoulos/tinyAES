@@ -1,3 +1,4 @@
+#include "AES128.h"
 #include "AES256.h"
 #include <iostream>
 #include <stdio.h>
@@ -34,26 +35,26 @@ int main(int argc, char **argv){
 		return -2;
 	}
 
-	AES256 myAES;
-	myAES.setKey(my_key);
-	if(!myAES.setUserKey(argv[1])) return -1;
+	AES256 myAES128;
+	myAES128.setKey(my_key);
+	if(!myAES128.setUserKey(argv[1])) return -1;
 
 	//return 0;
 
 	cout << "\033[1;32m\nINPUT:\033[0m" << endl;
-	myAES.printData(src);
+	myAES128.printData(src);
 
-	myAES.encrypt(src, src, 16);
-	myAES.decrypt(src, src, 16);
+	myAES128.encrypt(src, src, 16);
+	myAES128.decrypt(src, src, 16);
 
 	cout << "\033[1;32m\nDECRYPTED:\033[0m" << endl;
-	myAES.printData(src);
+	myAES128.printData(src);
 	
 	char msg[1025] = "Hello abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz";
 	
 	int nbytes = strlen(msg)+1;
-	cout << "Bytes encrypted: " << myAES.encrypt((uint8_t*)msg, (uint8_t*)msg, nbytes) << endl;
-	cout << "Bytes decrypted: " << myAES.decrypt((uint8_t*)msg, (uint8_t*)msg, nbytes) << endl;
+	cout << "Bytes encrypted: " << myAES128.encrypt((uint8_t*)msg, (uint8_t*)msg, nbytes) << endl;
+	cout << "Bytes decrypted: " << myAES128.decrypt((uint8_t*)msg, (uint8_t*)msg, nbytes) << endl;
 	cout << msg << endl;
 
 	delete [] output2;

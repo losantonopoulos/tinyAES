@@ -1,4 +1,4 @@
-#include "AES128.h"
+#include "AES256.h"
 #include <iostream>
 #include <iostream>
 #include <cstdint>
@@ -10,9 +10,9 @@ using namespace std;
 
 typedef uint8_t uint8_t;
 
-const uint8_t AES128::rCon[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36};
+const uint8_t AES256::rCon[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36};
 
-const uint8_t AES128::sBox[256] = {
+const uint8_t AES256::sBox[256] = {
 	0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
 	0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
 	0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
@@ -30,7 +30,7 @@ const uint8_t AES128::sBox[256] = {
 	0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
 	0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16};
 
-const uint8_t AES128::invSbox[256] = {
+const uint8_t AES256::invSbox[256] = {
 	0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
 	0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb,
 	0x54, 0x7b, 0x94, 0x32, 0xa6, 0xc2, 0x23, 0x3d, 0xee, 0x4c, 0x95, 0x0b, 0x42, 0xfa, 0xc3, 0x4e,
@@ -49,7 +49,7 @@ const uint8_t AES128::invSbox[256] = {
 	0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d};
 
 // MULTIPLICATION LUTs
-const uint8_t AES128::multiply_2[256] = {
+const uint8_t AES256::multiply_2[256] = {
 	0x00,0x02,0x04,0x06,0x08,0x0a,0x0c,0x0e,0x10,0x12,0x14,0x16,0x18,0x1a,0x1c,0x1e,
 	0x20,0x22,0x24,0x26,0x28,0x2a,0x2c,0x2e,0x30,0x32,0x34,0x36,0x38,0x3a,0x3c,0x3e,
 	0x40,0x42,0x44,0x46,0x48,0x4a,0x4c,0x4e,0x50,0x52,0x54,0x56,0x58,0x5a,0x5c,0x5e,
@@ -67,7 +67,7 @@ const uint8_t AES128::multiply_2[256] = {
 	0xdb,0xd9,0xdf,0xdd,0xd3,0xd1,0xd7,0xd5,0xcb,0xc9,0xcf,0xcd,0xc3,0xc1,0xc7,0xc5,
 	0xfb,0xf9,0xff,0xfd,0xf3,0xf1,0xf7,0xf5,0xeb,0xe9,0xef,0xed,0xe3,0xe1,0xe7,0xe5};
 
-const uint8_t AES128::multiply_3[256] = {
+const uint8_t AES256::multiply_3[256] = {
 	0x00,0x03,0x06,0x05,0x0c,0x0f,0x0a,0x09,0x18,0x1b,0x1e,0x1d,0x14,0x17,0x12,0x11,
 	0x30,0x33,0x36,0x35,0x3c,0x3f,0x3a,0x39,0x28,0x2b,0x2e,0x2d,0x24,0x27,0x22,0x21,
 	0x60,0x63,0x66,0x65,0x6c,0x6f,0x6a,0x69,0x78,0x7b,0x7e,0x7d,0x74,0x77,0x72,0x71,
@@ -85,7 +85,7 @@ const uint8_t AES128::multiply_3[256] = {
 	0x3b,0x38,0x3d,0x3e,0x37,0x34,0x31,0x32,0x23,0x20,0x25,0x26,0x2f,0x2c,0x29,0x2a,
 	0x0b,0x08,0x0d,0x0e,0x07,0x04,0x01,0x02,0x13,0x10,0x15,0x16,0x1f,0x1c,0x19,0x1a};
 
-const uint8_t AES128::multiply_9[256] = {
+const uint8_t AES256::multiply_9[256] = {
 	0x00,0x09,0x12,0x1b,0x24,0x2d,0x36,0x3f,0x48,0x41,0x5a,0x53,0x6c,0x65,0x7e,0x77,
 	0x90,0x99,0x82,0x8b,0xb4,0xbd,0xa6,0xaf,0xd8,0xd1,0xca,0xc3,0xfc,0xf5,0xee,0xe7,
 	0x3b,0x32,0x29,0x20,0x1f,0x16,0x0d,0x04,0x73,0x7a,0x61,0x68,0x57,0x5e,0x45,0x4c,
@@ -103,7 +103,7 @@ const uint8_t AES128::multiply_9[256] = {
 	0xa1,0xa8,0xb3,0xba,0x85,0x8c,0x97,0x9e,0xe9,0xe0,0xfb,0xf2,0xcd,0xc4,0xdf,0xd6,
 	0x31,0x38,0x23,0x2a,0x15,0x1c,0x07,0x0e,0x79,0x70,0x6b,0x62,0x5d,0x54,0x4f,0x46};
 
-const uint8_t AES128::multiply_11[256] = {
+const uint8_t AES256::multiply_11[256] = {
 	0x00,0x0b,0x16,0x1d,0x2c,0x27,0x3a,0x31,0x58,0x53,0x4e,0x45,0x74,0x7f,0x62,0x69,
 	0xb0,0xbb,0xa6,0xad,0x9c,0x97,0x8a,0x81,0xe8,0xe3,0xfe,0xf5,0xc4,0xcf,0xd2,0xd9,
 	0x7b,0x70,0x6d,0x66,0x57,0x5c,0x41,0x4a,0x23,0x28,0x35,0x3e,0x0f,0x04,0x19,0x12,
@@ -121,7 +121,7 @@ const uint8_t AES128::multiply_11[256] = {
 	0x7a,0x71,0x6c,0x67,0x56,0x5d,0x40,0x4b,0x22,0x29,0x34,0x3f,0x0e,0x05,0x18,0x13,
 	0xca,0xc1,0xdc,0xd7,0xe6,0xed,0xf0,0xfb,0x92,0x99,0x84,0x8f,0xbe,0xb5,0xa8,0xa3};
 
-const uint8_t AES128::multiply_13[256] = {
+const uint8_t AES256::multiply_13[256] = {
 	0x00,0x0d,0x1a,0x17,0x34,0x39,0x2e,0x23,0x68,0x65,0x72,0x7f,0x5c,0x51,0x46,0x4b,
 	0xd0,0xdd,0xca,0xc7,0xe4,0xe9,0xfe,0xf3,0xb8,0xb5,0xa2,0xaf,0x8c,0x81,0x96,0x9b,
 	0xbb,0xb6,0xa1,0xac,0x8f,0x82,0x95,0x98,0xd3,0xde,0xc9,0xc4,0xe7,0xea,0xfd,0xf0,
@@ -139,7 +139,7 @@ const uint8_t AES128::multiply_13[256] = {
 	0x0c,0x01,0x16,0x1b,0x38,0x35,0x22,0x2f,0x64,0x69,0x7e,0x73,0x50,0x5d,0x4a,0x47,
 	0xdc,0xd1,0xc6,0xcb,0xe8,0xe5,0xf2,0xff,0xb4,0xb9,0xae,0xa3,0x80,0x8d,0x9a,0x97};
 
-const uint8_t AES128::multiply_14[256] = {
+const uint8_t AES256::multiply_14[256] = {
 	0x00,0x0e,0x1c,0x12,0x38,0x36,0x24,0x2a,0x70,0x7e,0x6c,0x62,0x48,0x46,0x54,0x5a,
 	0xe0,0xee,0xfc,0xf2,0xd8,0xd6,0xc4,0xca,0x90,0x9e,0x8c,0x82,0xa8,0xa6,0xb4,0xba,
 	0xdb,0xd5,0xc7,0xc9,0xe3,0xed,0xff,0xf1,0xab,0xa5,0xb7,0xb9,0x93,0x9d,0x8f,0x81,
@@ -157,18 +157,18 @@ const uint8_t AES128::multiply_14[256] = {
 	0x37,0x39,0x2b,0x25,0x0f,0x01,0x13,0x1d,0x47,0x49,0x5b,0x55,0x7f,0x71,0x63,0x6d,
 	0xd7,0xd9,0xcb,0xc5,0xef,0xe1,0xf3,0xfd,0xa7,0xa9,0xbb,0xb5,0x9f,0x91,0x83,0x8d};
 
-AES128::AES128(){
+AES256::AES256(){
  
 	try{
-		original_128_key = new uint8_t[KEY_128_SIZE];
-		expanded_128_key = new uint8_t*[KEY_128_ROUNDS];
-		for(int8_t i=0;i<KEY_128_ROUNDS;i++) expanded_128_key[i] = new uint8_t[KEY_128_SIZE];
+		original_256_key = new uint8_t[KEY_256_SIZE];
+		expanded_256_key = new uint8_t*[KEY_256_ROUNDS];
+		for(int8_t i=0;i<KEY_256_ROUNDS;i++) expanded_256_key[i] = new uint8_t[KEY_256_SIZE];
 
-		for(int8_t i=0;i<KEY_128_SIZE;i++) original_128_key[i] = 0x0;
+		for(int8_t i=0;i<KEY_256_SIZE;i++) original_256_key[i] = 0x0;
 
 		initialized = true;
 	}catch(int e){
-		cerr << "\033[1;31m\nCould not initialize AES128 object\033[0m" << endl;	
+		cerr << "\033[1;31m\nCould not initialize AES256 object\033[0m" << endl;	
 		initialized = false;
 	}	
 }
@@ -176,54 +176,54 @@ AES128::AES128(){
 /*
 	This function ...
 */
-unsigned int AES128::encrypt(const uint8_t *temp_key, const uint8_t *src, uint8_t *dst, unsigned int n_bytes){
+unsigned int AES256::encrypt(const uint8_t *temp_key, const uint8_t *src, uint8_t *dst, unsigned int n_bytes){
 
-	uint8_t* key = new uint8_t[BLOCK_128_SIZE];
+	uint8_t* key = new uint8_t[BLOCK_256_SIZE];
 
 	if (key == NULL){
 		cerr << "\033[1;31m\nCould not allocate memory...\033[0m" << endl;
 		return 0;
 	}
 
-	memcpy(key,temp_key,KEY_128_SIZE);
+	memcpy(key,temp_key,KEY_256_SIZE);
 	
 	uint8_t **expandedKey;
-	expandedKey = new uint8_t*[KEY_128_ROUNDS];
+	expandedKey = new uint8_t*[KEY_256_ROUNDS];
 
 	if (expandedKey == NULL){
 		cerr << "\033[1;31m\nCould not allocate memory...\033[0m" << endl;
 		return 0;
 	}
-	for(int8_t i=0;i<KEY_128_ROUNDS;i++) expandedKey[i] = new uint8_t[KEY_128_SIZE];
+	for(int8_t i=0;i<KEY_256_ROUNDS;i++) expandedKey[i] = new uint8_t[KEY_256_SIZE];
 
 	uint8_t **tmp;
-	tmp = new uint8_t*[AES_128_ROWS];
+	tmp = new uint8_t*[AES_256_ROWS];
 	if (tmp == NULL){
 		cerr << "\033[1;31m\nCould not allocate memory...\033[0m" << endl;
 		return 0;
 	}
-	for(int8_t i=0;i<AES_128_ROWS;i++) tmp[i] = new uint8_t[AES_128_COLUMNS];
+	for(int8_t i=0;i<AES_256_ROWS;i++) tmp[i] = new uint8_t[AES_256_COLUMNS];
 
-	expandKey(key,expandedKey);
+	AES256::expandKey(key,expandedKey);
 
-	int remaining = (n_bytes % BLOCK_128_SIZE);
-	int n_blocks = (n_bytes / BLOCK_128_SIZE) + (remaining ? 1:0);
+	int remaining = (n_bytes % BLOCK_256_SIZE);
+	int n_blocks = (n_bytes / BLOCK_256_SIZE) + (remaining ? 1:0);
 	
 	for(int i=0;i<n_blocks;i++){
 
-		AES128::encryptBlock(key, expandedKey, tmp, &src[i*BLOCK_128_SIZE], &dst[i*BLOCK_128_SIZE]);
+		AES256::encryptBlock(key, expandedKey, tmp, &src[i*BLOCK_256_SIZE], &dst[i*BLOCK_256_SIZE]);
 	
 	}
 
 	if(remaining){
 
-		uint8_t* over = new uint8_t[BLOCK_128_SIZE];
+		uint8_t* over = new uint8_t[BLOCK_256_SIZE];
 
-		memcpy(over, &src[n_blocks*BLOCK_128_SIZE], remaining);
+		memcpy(over, &src[n_blocks*BLOCK_256_SIZE], remaining);
 
-		AES128::encryptBlock(key, expandedKey, tmp, over, over);
+		AES256::encryptBlock(key, expandedKey, tmp, over, over);
 
-		memcpy(&dst[n_blocks*BLOCK_128_SIZE], over, remaining);
+		memcpy(&dst[n_blocks*BLOCK_256_SIZE], over, remaining);
 
 		delete [] over;
 
@@ -240,39 +240,39 @@ unsigned int AES128::encrypt(const uint8_t *temp_key, const uint8_t *src, uint8_
 /*
 	This function ...
 */
-unsigned int AES128::encrypt(const uint8_t *src, uint8_t *dst, unsigned int n_bytes){
+unsigned int AES256::encrypt(const uint8_t *src, uint8_t *dst, unsigned int n_bytes){
 	if(!key_set){
 		cerr << "\033[1;31m\nYou must set up a key first with the setKey(uint8_t *key) function first...\033[0m" << endl;	
 		return 0;
 	}
 	
 	uint8_t **tmp;
-	tmp = new uint8_t*[AES_128_COLUMNS];
+	tmp = new uint8_t*[AES_256_COLUMNS];
 	if (tmp == NULL){
 		cerr << "\033[1;31m\nCould not allocate memory...\033[0m" << endl;
 		return 0;
 	}
 
-	for(int8_t i=0;i<AES_128_ROWS;i++) tmp[i] = new uint8_t[AES_128_COLUMNS];
+	for(int8_t i=0;i<AES_256_ROWS;i++) tmp[i] = new uint8_t[AES_256_COLUMNS];
 
-	int remaining = (n_bytes % BLOCK_128_SIZE);
-	int n_blocks = (n_bytes / BLOCK_128_SIZE) + (remaining ? 1:0);
+	int remaining = (n_bytes % BLOCK_256_SIZE);
+	int n_blocks = (n_bytes / BLOCK_256_SIZE) + (remaining ? 1:0);
 	
 	for(int i=0;i<n_blocks;i++){
 
-		AES128::encryptBlock(tmp, &src[i*BLOCK_128_SIZE], &dst[i*BLOCK_128_SIZE]);
+		AES256::encryptBlock(tmp, &src[i*BLOCK_256_SIZE], &dst[i*BLOCK_256_SIZE]);
 	
 	}
 
 	if(remaining){
 
-		uint8_t* over = new uint8_t[BLOCK_128_SIZE];
+		uint8_t* over = new uint8_t[BLOCK_256_SIZE];
 
-		memcpy(over, &src[n_blocks*BLOCK_128_SIZE], remaining);
+		memcpy(over, &src[n_blocks*BLOCK_256_SIZE], remaining);
 
-		AES128::encryptBlock(tmp, over, over);
+		AES256::encryptBlock(tmp, over, over);
 
-		memcpy(&dst[n_blocks*BLOCK_128_SIZE], over, remaining);
+		memcpy(&dst[n_blocks*BLOCK_256_SIZE], over, remaining);
 
 		delete [] over;
 
@@ -286,26 +286,26 @@ unsigned int AES128::encrypt(const uint8_t *src, uint8_t *dst, unsigned int n_by
 /*
 	This function ...
 */
-void AES128::encryptBlock(uint8_t *key,  uint8_t **expandedKey, uint8_t **tmp, const uint8_t *src,uint8_t *dst){
+void AES256::encryptBlock(uint8_t *key,  uint8_t **expandedKey, uint8_t **tmp, const uint8_t *src,uint8_t *dst){
 
 	// Initial setup
-	convertToState(src,tmp);
-	addKey(key,tmp);
+	AES256::convertToState(src,tmp);
+	AES256::addKey(key,tmp);
 	
 	// ROUNDS 1-9
-	for(int8_t i=0;i<KEY_128_ROUNDS-1;i++){
-		substitute(tmp);
-		shiftRows(tmp);
-		mixColumns(tmp);
-		addKey(expandedKey[i],tmp);
+	for(int8_t i=0;i<KEY_256_ROUNDS-1;i++){
+		AES256::substitute(tmp);
+		AES256::shiftRows(tmp);
+		AES256::mixColumns(tmp);
+		AES256::addKey(expandedKey[i],tmp);
 	}
 
 	// ROUND 10
-	substitute(tmp);
-	shiftRows(tmp);
-	addKey(expandedKey[KEY_128_ROUNDS-1],tmp);
+	AES256::substitute(tmp);
+	AES256::shiftRows(tmp);
+	AES256::addKey(expandedKey[KEY_256_ROUNDS-1],tmp);
 
-	for(int8_t i=0;i<AES_128_ROWS;i++) memcpy(&dst[i*AES_128_ROWS],&tmp[i][0],AES_128_COLUMNS);
+	for(int8_t i=0;i<AES_256_ROWS;i++) memcpy(&dst[i*AES_256_ROWS],&tmp[i][0],AES_256_COLUMNS);
 	
 	return;
 }
@@ -313,26 +313,26 @@ void AES128::encryptBlock(uint8_t *key,  uint8_t **expandedKey, uint8_t **tmp, c
 /*
 	This function ...
 */
-void AES128::encryptBlock(uint8_t **tmp, const uint8_t *src,uint8_t *dst){
+void AES256::encryptBlock(uint8_t **tmp, const uint8_t *src,uint8_t *dst){
 
 	// Initial setup
-	convertToState(src,tmp);
-	addKey(original_128_key,tmp);
+	AES256::convertToState(src,tmp);
+	AES256::addKey(original_256_key,tmp);
 	
 	// ROUNDS 1-9
-	for(int8_t i=0;i<KEY_128_ROUNDS-1;i++){
-		substitute(tmp);
-		shiftRows(tmp);
-		mixColumns(tmp);
-		addKey(expanded_128_key[i],tmp);
+	for(int8_t i=0;i<KEY_256_ROUNDS-1;i++){
+		AES256::substitute(tmp);
+		AES256::shiftRows(tmp);
+		AES256::mixColumns(tmp);
+		AES256::addKey(expanded_256_key[i],tmp);
 	}
 
 	// ROUND 10
-	substitute(tmp);
-	shiftRows(tmp);
-	addKey(expanded_128_key[KEY_128_ROUNDS-1],tmp);
+	AES256::substitute(tmp);
+	AES256::shiftRows(tmp);
+	AES256::addKey(expanded_256_key[KEY_256_ROUNDS-1],tmp);
 
-	for(int8_t i=0;i<AES_128_ROWS;i++) memcpy(&dst[i*AES_128_ROWS],&tmp[i][0],AES_128_COLUMNS);
+	for(int8_t i=0;i<AES_256_ROWS;i++) memcpy(&dst[i*AES_256_ROWS],&tmp[i][0],AES_256_COLUMNS);
 	
 	return;
 }
@@ -340,54 +340,54 @@ void AES128::encryptBlock(uint8_t **tmp, const uint8_t *src,uint8_t *dst){
 /*
 	This function ...
 */
-unsigned int AES128::decrypt(const uint8_t *temp_key, const uint8_t *src, uint8_t *dst, unsigned int n_bytes){
+unsigned int AES256::decrypt(const uint8_t *temp_key, const uint8_t *src, uint8_t *dst, unsigned int n_bytes){
 
-	uint8_t* key = new uint8_t[BLOCK_128_SIZE];
+	uint8_t* key = new uint8_t[BLOCK_256_SIZE];
 
 	if (key == NULL){
 		cerr << "\033[1;31m\nCould not allocate memory...\033[0m" << endl;
 		return 0;
 	}
 
-	memcpy(key,temp_key,KEY_128_SIZE);
+	memcpy(key,temp_key,KEY_256_SIZE);
 	
 	uint8_t **expandedKey;
-	expandedKey = new uint8_t*[KEY_128_ROUNDS];
+	expandedKey = new uint8_t*[KEY_256_ROUNDS];
 
 	if (expandedKey == NULL){
 		cerr << "\033[1;31m\nCould not allocate memory...\033[0m" << endl;
 		return 0;
 	}
-	for(int8_t i=0;i<KEY_128_ROUNDS;i++) expandedKey[i] = new uint8_t[KEY_128_SIZE];
+	for(int8_t i=0;i<KEY_256_ROUNDS;i++) expandedKey[i] = new uint8_t[KEY_256_SIZE];
 
 	uint8_t **tmp;
-	tmp = new uint8_t*[AES_128_ROWS];
+	tmp = new uint8_t*[AES_256_ROWS];
 	if (tmp == NULL){
 		cerr << "\033[1;31m\nCould not allocate memory...\033[0m" << endl;
 		return 0;
 	}
-	for(int8_t i=0;i<AES_128_ROWS;i++) tmp[i] = new uint8_t[AES_128_COLUMNS];
+	for(int8_t i=0;i<AES_256_ROWS;i++) tmp[i] = new uint8_t[AES_256_COLUMNS];
 
-	expandKey(key,expandedKey);
+	AES256::expandKey(key,expandedKey);
 
-	int remaining = (n_bytes % BLOCK_128_SIZE);
-	int n_blocks = (n_bytes / BLOCK_128_SIZE) + (remaining ? 1:0);
+	int remaining = (n_bytes % BLOCK_256_SIZE);
+	int n_blocks = (n_bytes / BLOCK_256_SIZE) + (remaining ? 1:0);
 	
 	for(int i=0;i<n_blocks;i++){
 
-		AES128::decryptBlock(key, expandedKey, tmp, &src[i*BLOCK_128_SIZE], &dst[i*BLOCK_128_SIZE]);
+		AES256::decryptBlock(key, expandedKey, tmp, &src[i*BLOCK_256_SIZE], &dst[i*BLOCK_256_SIZE]);
 	
 	}
 
 	if(remaining){
 
-		uint8_t* over = new uint8_t[BLOCK_128_SIZE];
+		uint8_t* over = new uint8_t[BLOCK_256_SIZE];
 
-		memcpy(over, &src[n_blocks*BLOCK_128_SIZE], remaining);
+		memcpy(over, &src[n_blocks*BLOCK_256_SIZE], remaining);
 
-		AES128::decryptBlock(key, expandedKey, tmp, over, over);
+		AES256::decryptBlock(key, expandedKey, tmp, over, over);
 
-		memcpy(&dst[n_blocks*BLOCK_128_SIZE], over, remaining);
+		memcpy(&dst[n_blocks*BLOCK_256_SIZE], over, remaining);
 
 		delete [] over;
 
@@ -403,7 +403,7 @@ unsigned int AES128::decrypt(const uint8_t *temp_key, const uint8_t *src, uint8_
 /*
 	This function ...
 */
-unsigned int AES128::decrypt(const uint8_t *src,uint8_t *dst, unsigned int n_bytes){
+unsigned int AES256::decrypt(const uint8_t *src,uint8_t *dst, unsigned int n_bytes){
 
 	if(!key_set){
 		cerr << "\033[1;31m\nYou must set up a key first with the setKey(uint8_t *key) function first...\033[0m" << endl;	
@@ -411,31 +411,31 @@ unsigned int AES128::decrypt(const uint8_t *src,uint8_t *dst, unsigned int n_byt
 	}
 	
 	uint8_t **tmp;
-	tmp = new uint8_t*[AES_128_COLUMNS];
+	tmp = new uint8_t*[AES_256_COLUMNS];
 	if (tmp == NULL){
 		cerr << "\033[1;31m\nCould not allocate memory...\033[0m" << endl;
 		return 0;
 	}
-	for(int8_t i=0;i<AES_128_ROWS;i++) tmp[i] = new uint8_t[AES_128_COLUMNS];
+	for(int8_t i=0;i<AES_256_ROWS;i++) tmp[i] = new uint8_t[AES_256_COLUMNS];
 
-	int remaining = (n_bytes % BLOCK_128_SIZE);
-	int n_blocks = (n_bytes / BLOCK_128_SIZE) + (remaining ? 1:0);
+	int remaining = (n_bytes % BLOCK_256_SIZE);
+	int n_blocks = (n_bytes / BLOCK_256_SIZE) + (remaining ? 1:0);
 	
 	for(int i=0;i<n_blocks;i++){
 
-		AES128::decryptBlock(tmp, &src[i*BLOCK_128_SIZE], &dst[i*BLOCK_128_SIZE]);
+		AES256::decryptBlock(tmp, &src[i*BLOCK_256_SIZE], &dst[i*BLOCK_256_SIZE]);
 	
 	}
 
 	if(remaining){
 
-		uint8_t* over = new uint8_t[BLOCK_128_SIZE];
+		uint8_t* over = new uint8_t[BLOCK_256_SIZE];
 
-		memcpy(over, &src[n_blocks*BLOCK_128_SIZE], remaining);
+		memcpy(over, &src[n_blocks*BLOCK_256_SIZE], remaining);
 
-		AES128::decryptBlock(tmp, over, over);
+		AES256::decryptBlock(tmp, over, over);
 
-		memcpy(&dst[n_blocks*BLOCK_128_SIZE], over, remaining);
+		memcpy(&dst[n_blocks*BLOCK_256_SIZE], over, remaining);
 
 		delete [] over;
 
@@ -448,52 +448,52 @@ unsigned int AES128::decrypt(const uint8_t *src,uint8_t *dst, unsigned int n_byt
 }
 
 
-void AES128::decryptBlock(uint8_t *key,  uint8_t **expandedKey, uint8_t **tmp, const uint8_t *src,uint8_t *dst){
+void AES256::decryptBlock(uint8_t *key,  uint8_t **expandedKey, uint8_t **tmp, const uint8_t *src,uint8_t *dst){
 
 	// Initial setup
-	convertToState(src,tmp);
+	AES256::convertToState(src,tmp);
 
 	// ROUND 10
-	addKey(expandedKey[KEY_128_ROUNDS-1],tmp);
-	invShiftRows(tmp);
-	invSubstitute(tmp);
+	AES256::addKey(expandedKey[KEY_256_ROUNDS-1],tmp);
+	AES256::invShiftRows(tmp);
+	AES256::invSubstitute(tmp);
 
 	// ROUNDS 9-1
-	for(int8_t i = KEY_128_ROUNDS-2;i>=0;i--){
-		addKey(expandedKey[i],tmp);
-		invMixColumns(tmp);
-		invShiftRows(tmp);
-		invSubstitute(tmp);	
+	for(int8_t i = KEY_256_ROUNDS-2;i>=0;i--){
+		AES256::addKey(expandedKey[i],tmp);
+		AES256::invMixColumns(tmp);
+		AES256::invShiftRows(tmp);
+		AES256::invSubstitute(tmp);	
 	}
 
 	// FINALLY
-	addKey(key,tmp);
-	for(int8_t i=0;i<AES_128_ROWS;i++) memcpy(&dst[i*AES_128_ROWS],&tmp[i][0],AES_128_COLUMNS);
+	AES256::addKey(key,tmp);
+	for(int8_t i=0;i<AES_256_ROWS;i++) memcpy(&dst[i*AES_256_ROWS],&tmp[i][0],AES_256_COLUMNS);
 
 	return;
 }
 
-void AES128::decryptBlock(uint8_t **tmp, const uint8_t *src, uint8_t *dst){
+void AES256::decryptBlock(uint8_t **tmp, const uint8_t *src, uint8_t *dst){
 
 	// Initial setup
-	convertToState(src,tmp);
+	AES256::convertToState(src,tmp);
 
 	// ROUND 10
-	addKey(expanded_128_key[KEY_128_ROUNDS-1],tmp);
-	invShiftRows(tmp);
-	invSubstitute(tmp);
+	AES256::addKey(expanded_256_key[KEY_256_ROUNDS-1],tmp);
+	AES256::invShiftRows(tmp);
+	AES256::invSubstitute(tmp);
 
 	// ROUNDS 9-1
-	for(int8_t i = KEY_128_ROUNDS-2;i>=0;i--){
-		addKey(expanded_128_key [i],tmp);
-		invMixColumns(tmp);
-		invShiftRows(tmp);
-		invSubstitute(tmp);	
+	for(int8_t i = KEY_256_ROUNDS-2;i>=0;i--){
+		AES256::addKey(expanded_256_key [i],tmp);
+		AES256::invMixColumns(tmp);
+		AES256::invShiftRows(tmp);
+		AES256::invSubstitute(tmp);	
 	}
 
 	// FINALLY
-	addKey(original_128_key,tmp);
-	for(int8_t i=0;i<AES_128_ROWS;i++) memcpy(&dst[i*AES_128_ROWS],&tmp[i][0],AES_128_COLUMNS);
+	AES256::addKey(original_256_key,tmp);
+	for(int8_t i=0;i<AES_256_ROWS;i++) memcpy(&dst[i*AES_256_ROWS],&tmp[i][0],AES_256_COLUMNS);
 
 	return;
 }
@@ -501,11 +501,11 @@ void AES128::decryptBlock(uint8_t **tmp, const uint8_t *src, uint8_t *dst){
 /*
 	This function ...
 */
-void AES128::convertToState(const uint8_t *src,uint8_t **dst){
+void AES256::convertToState(const uint8_t *src,uint8_t **dst){
 	
 	// !!!! ARRAY( ROWS, COLUMNS )
-	for(int16_t i=0;i<BLOCK_128_SIZE;i++) {
-		dst[i/AES_128_COLUMNS][i%AES_128_COLUMNS] = src[i];
+	for(int16_t i=0;i<BLOCK_256_SIZE;i++) {
+		dst[i/AES_256_COLUMNS][i%AES_256_COLUMNS] = src[i];
 	}
 
 	return;
@@ -514,12 +514,12 @@ void AES128::convertToState(const uint8_t *src,uint8_t **dst){
 /*
 	This function ...
 */
-void AES128::substitute(uint8_t **dst){
+void AES256::substitute(uint8_t **dst){
 
 	//cout << "\nBEFORE: "<< endl;
 	//view(dst);
-	for(int i=0;i<AES_128_ROWS;i++) {
-		for(int j=0;j<AES_128_COLUMNS;j++) {
+	for(int i=0;i<AES_256_ROWS;i++) {
+		for(int j=0;j<AES_256_COLUMNS;j++) {
 			dst[i][j] = sBox[(dst[i][j] / 16)*16 + (dst[i][j] % 16)];
 		}
 	}
@@ -534,12 +534,12 @@ void AES128::substitute(uint8_t **dst){
 /*
 	This function ...
 */
-void AES128::invSubstitute(uint8_t **dst){
+void AES256::invSubstitute(uint8_t **dst){
 
 	//cout << "\nBEFORE: "<< endl;
 	//view(dst);
-	for(int i=0;i<AES_128_ROWS;i++) {
-		for(int j=0;j<AES_128_COLUMNS;j++) {
+	for(int i=0;i<AES_256_ROWS;i++) {
+		for(int j=0;j<AES_256_COLUMNS;j++) {
 			dst[i][j] = invSbox[(dst[i][j] / 16)*16 + (dst[i][j] % 16)];
 		}
 	}
@@ -553,20 +553,20 @@ void AES128::invSubstitute(uint8_t **dst){
 /*
 	This function ...
 */
-void AES128::shiftRows(uint8_t **dst){
+void AES256::shiftRows(uint8_t **dst){
 
 	//cout << "\nBEFORE: "<< endl;
 	//view(dst);
 
-	for(int i=1;i<AES_128_ROWS;i++) {	
+	for(int i=1;i<AES_256_ROWS;i++) {	
 		uint8_t left[i];
-		uint8_t right[AES_128_ROWS-1];
+		uint8_t right[AES_256_ROWS-1];
 		
 		// std::memcpy(dest, source, sizeof dest);
 		std::memcpy(&left,&dst[i][0],i);
-		std::memcpy(&right,&dst[i][i],AES_128_ROWS-i);
-		std::memcpy(&dst[i][0],&right,AES_128_ROWS-i);
-		std::memcpy(&dst[i][AES_128_ROWS-i],&left,i);
+		std::memcpy(&right,&dst[i][i],AES_256_ROWS-i);
+		std::memcpy(&dst[i][0],&right,AES_256_ROWS-i);
+		std::memcpy(&dst[i][AES_256_ROWS-i],&left,i);
 	}
 
 	//cout << "\nAFTER: "<< endl;
@@ -577,20 +577,20 @@ void AES128::shiftRows(uint8_t **dst){
 /*
 	This function ...
 */
-void AES128::invShiftRows(uint8_t **dst){
+void AES256::invShiftRows(uint8_t **dst){
 
 	//cout << "\nBEFORE: "<< endl;
 	//view(dst);
 
-	for(int i=1;i<AES_128_ROWS;i++) {	
-		uint8_t left[AES_128_ROWS-1];
+	for(int i=1;i<AES_256_ROWS;i++) {	
+		uint8_t left[AES_256_ROWS-1];
 		uint8_t right[i];
 		
 		// std::memcpy(dest, source, sizeof dest);
-		std::memcpy(&left,&dst[i][0],AES_128_ROWS-i);
-		std::memcpy(&right,&dst[i][AES_128_ROWS-i],i);
+		std::memcpy(&left,&dst[i][0],AES_256_ROWS-i);
+		std::memcpy(&right,&dst[i][AES_256_ROWS-i],i);
 		std::memcpy(&dst[i][0],&right,i);
-		std::memcpy(&dst[i][i],&left,AES_128_ROWS-i);
+		std::memcpy(&dst[i][i],&left,AES_256_ROWS-i);
 	}
 
 	//cout << "\nAFTER: "<< endl;
@@ -603,10 +603,10 @@ void AES128::invShiftRows(uint8_t **dst){
 /*
 	This function ...
 */
-void AES128::view(uint8_t **dst){
-	for(int i=0;i<AES_128_ROWS;i++) {
+void AES256::view(uint8_t **dst){
+	for(int i=0;i<AES_256_ROWS;i++) {
 			cout << "\n| ";
-			for(int j=0;j<AES_128_COLUMNS;j++) {
+			for(int j=0;j<AES_256_COLUMNS;j++) {
 				cout << std::hex << "\033[1;32m" << (int)dst[i][j] << "\033[0m" << " | ";
 			}
 			cout << std::dec << endl;
@@ -619,14 +619,14 @@ void AES128::view(uint8_t **dst){
 /*
 	This function ...
 */
-void AES128::addKey(const uint8_t *key,uint8_t **dst){
+void AES256::addKey(const uint8_t *key,uint8_t **dst){
 
 	//cout << "\nBEFORE KEY: "<< endl;
 	//view(dst);
 
-	for(int i=0;i<AES_128_ROWS;i++) {
-		for(int j=0;j<AES_128_COLUMNS;j++) {
-			dst[i][j] = dst[i][j] ^ key[i*AES_128_COLUMNS + j];
+	for(int i=0;i<AES_256_ROWS;i++) {
+		for(int j=0;j<AES_256_COLUMNS;j++) {
+			dst[i][j] = dst[i][j] ^ key[i*AES_256_COLUMNS + j];
 		}
 	}
 
@@ -639,31 +639,31 @@ void AES128::addKey(const uint8_t *key,uint8_t **dst){
 /*
 	This function ...
 */
-void AES128::expandKey(const uint8_t *original_key,uint8_t **expanded_key){
+void AES256::expandKey(const uint8_t *original_key,uint8_t **expanded_key){
 	
-	uint8_t *key = new uint8_t[KEY_128_SIZE];
-	memcpy(key,original_key,KEY_128_SIZE);
+	uint8_t *key = new uint8_t[KEY_256_SIZE];
+	memcpy(key,original_key,KEY_256_SIZE);
 	
-	uint8_t temp_key_column[AES_128_ROWS];
+	uint8_t temp_key_column[AES_256_ROWS];
 
-	for(int8_t r=0;r<KEY_128_ROUNDS;r++){
-		for(int8_t i=1;i<AES_128_ROWS;i++){
-			temp_key_column[i-1] = sBox[(key[i*AES_128_COLUMNS + AES_128_COLUMNS-1]/ 16)*16 + (key[i*AES_128_COLUMNS + AES_128_COLUMNS-1] % 16)];
+	for(int8_t r=0;r<KEY_256_ROUNDS;r++){
+		for(int8_t i=1;i<AES_256_ROWS;i++){
+			temp_key_column[i-1] = sBox[(key[i*AES_256_COLUMNS + AES_256_COLUMNS-1]/ 16)*16 + (key[i*AES_256_COLUMNS + AES_256_COLUMNS-1] % 16)];
 		}
-		temp_key_column[AES_128_ROWS-1] = sBox[(key[AES_128_COLUMNS-1]/ 16)*16 + (key[AES_128_COLUMNS-1] % 16)];
+		temp_key_column[AES_256_ROWS-1] = sBox[(key[AES_256_COLUMNS-1]/ 16)*16 + (key[AES_256_COLUMNS-1] % 16)];
 
-		for(int8_t i=0;i<AES_128_ROWS;i++){
-			key[i*AES_128_COLUMNS] = key[i*AES_128_COLUMNS] ^ temp_key_column[i];
+		for(int8_t i=0;i<AES_256_ROWS;i++){
+			key[i*AES_256_COLUMNS] = key[i*AES_256_COLUMNS] ^ temp_key_column[i];
 		}
 		key[0] = key[0] ^ rCon[r];
 
-		for(int8_t i=1;i<AES_128_COLUMNS;i++){
-			for(int8_t j=0;j<AES_128_ROWS;j++){
-				key[j*AES_128_COLUMNS + i] = key[j*AES_128_COLUMNS + i] ^ key[j*AES_128_COLUMNS + i-1];
+		for(int8_t i=1;i<AES_256_COLUMNS;i++){
+			for(int8_t j=0;j<AES_256_ROWS;j++){
+				key[j*AES_256_COLUMNS + i] = key[j*AES_256_COLUMNS + i] ^ key[j*AES_256_COLUMNS + i-1];
 			}
 		}
 		
-		memcpy(&expanded_key[r][0],key,KEY_128_SIZE);
+		memcpy(&expanded_key[r][0],key,KEY_256_SIZE);
 	}
 
 	return;	 
@@ -672,15 +672,15 @@ void AES128::expandKey(const uint8_t *original_key,uint8_t **expanded_key){
 /*
 	This function ...
 */
-void AES128::mixColumns(uint8_t **dst){
+void AES256::mixColumns(uint8_t **dst){
 
 
 	/*	------------------ DEPRECATED ------------------
-	uint8_t a[AES_128_ROWS];
-	uint8_t b[AES_128_ROWS];
+	uint8_t a[AES_256_ROWS];
+	uint8_t b[AES_256_ROWS];
 	uint8_t h;
-	for (int8_t j = 0; j < AES_128_COLUMNS; j++){
-		for (int8_t i = 0; i < AES_128_ROWS; ++i) {
+	for (int8_t j = 0; j < AES_256_COLUMNS; j++){
+		for (int8_t i = 0; i < AES_256_ROWS; ++i) {
 			a[i] = dst[i][j];
 			h = (uint8_t)( (int8_t)a[i] >> 7);
 			b[i] = a[i] << 1;
@@ -694,9 +694,9 @@ void AES128::mixColumns(uint8_t **dst){
 	}
 	*/
 
-	uint8_t *temp = new uint8_t[AES_128_COLUMNS];
+	uint8_t *temp = new uint8_t[AES_256_COLUMNS];
 
-	for(int i=0;i<AES_128_COLUMNS;i++){
+	for(int i=0;i<AES_256_COLUMNS;i++){
 		temp[0] = dst[0][i];
 		temp[1] = dst[1][i];
 		temp[2] = dst[2][i];
@@ -716,12 +716,12 @@ void AES128::mixColumns(uint8_t **dst){
 /*
 	This function ...
 */
-void AES128::invMixColumns(uint8_t **dst){
+void AES256::invMixColumns(uint8_t **dst){
 
-	uint8_t *temp = new uint8_t[AES_128_COLUMNS];
+	uint8_t *temp = new uint8_t[AES_256_COLUMNS];
 
-	for(int i=0;i<AES_128_COLUMNS;i++){
-		//memcpy(&temp[0],&dst[0][i],AES_128_ROWS);
+	for(int i=0;i<AES_256_COLUMNS;i++){
+		//memcpy(&temp[0],&dst[0][i],AES_256_ROWS);
 		temp[0] = dst[0][i];
 		temp[1] = dst[1][i];
 		temp[2] = dst[2][i];
@@ -741,13 +741,13 @@ void AES128::invMixColumns(uint8_t **dst){
 /*
 	This function ...
 */
-void AES128::viewKey(uint8_t *key){
+void AES256::viewKey(uint8_t *key){
 	
 	cout << "\033[1;31m\nKEY:\033[0m" <<endl; 
-	for(int i=0;i<AES_128_ROWS;i++) {
+	for(int i=0;i<AES_256_ROWS;i++) {
 			cout << "\n| ";
-			for(int j=0;j<AES_128_COLUMNS;j++) {
-				cout << std::hex << "\033[1;31m" << (int)key[i*AES_128_COLUMNS + j] << "\033[0m" << " | ";
+			for(int j=0;j<AES_256_COLUMNS;j++) {
+				cout << std::hex << "\033[1;31m" << (int)key[i*AES_256_COLUMNS + j] << "\033[0m" << " | ";
 			}
 			cout << std::dec << endl;
 	}
@@ -758,12 +758,12 @@ void AES128::viewKey(uint8_t *key){
 /*
 	This function ...
 */
-void AES128::printData(uint8_t *key){
+void AES256::printData(uint8_t *key){
 	cout << "\033[1;32m\nDATA:\033[0m" <<endl; 
-	for(int i=0;i<AES_128_ROWS;i++) {
+	for(int i=0;i<AES_256_ROWS;i++) {
 			cout << "\n| ";
-			for(int j=0;j<AES_128_COLUMNS;j++) {
-				cout << std::hex << "\033[1;32m" << (int)key[i*AES_128_COLUMNS + j] << "\033[0m" << " | ";
+			for(int j=0;j<AES_256_COLUMNS;j++) {
+				cout << std::hex << "\033[1;32m" << (int)key[i*AES_256_COLUMNS + j] << "\033[0m" << " | ";
 			}
 			cout << std::dec << endl;
 	}
@@ -774,7 +774,7 @@ void AES128::printData(uint8_t *key){
 /*
 	This function ...
 */
-bool AES128::setKey(uint8_t *key){
+bool AES256::setKey(uint8_t *key){
 	
 	if(!initialized){
 		cerr << "\033[1;31m\nCould not expand key\033[0m" << endl;	
@@ -782,8 +782,8 @@ bool AES128::setKey(uint8_t *key){
 	}
 
 	try{
-		memcpy(original_128_key,key,BLOCK_128_SIZE);
-		expandKey(original_128_key,expanded_128_key);
+		memcpy(original_256_key,key,BLOCK_256_SIZE);
+		AES256::expandKey(original_256_key,expanded_256_key);
 		key_set = true;
 	}catch(int e){
 		cerr << "\033[1;31m\nCould not expand key\033[0m" << endl;		
@@ -797,7 +797,7 @@ bool AES128::setKey(uint8_t *key){
 /*
 	This function ...
 */
-bool AES128::setUserKey(char *key){
+bool AES256::setUserKey(char *key){
 	
 	if(!initialized){
 		cerr << "\033[1;31m\nCould not expand key\033[0m" << endl;	
@@ -806,27 +806,27 @@ bool AES128::setUserKey(char *key){
 
 	int key_len = strlen(key);
 
-	if(key_len == BLOCK_128_SIZE){
+	if(key_len == BLOCK_256_SIZE){
 
 		try{
-			memcpy(original_128_key,key,BLOCK_128_SIZE);
-			expandKey(original_128_key,expanded_128_key);
+			memcpy(original_256_key,key,BLOCK_256_SIZE);
+			AES256::expandKey(original_256_key,expanded_256_key);
 			key_set = true;
 		}catch(int e){
 			cerr << "\033[1;31m\nCould not expand key\033[0m" << endl;		
 			return false;
 		}
 
-	}else if (key_len > BLOCK_128_SIZE){
+	}else if (key_len > BLOCK_256_SIZE){
 
-		cerr << "\033[1;31m\nKey must be at most " << BLOCK_128_SIZE << " characters " << "\033[0m" << endl;		
+		cerr << "\033[1;31m\nKey must be at most " << BLOCK_256_SIZE << " characters " << "\033[0m" << endl;		
 		return false;
 
 	}else {
 
 		try{
-			memcpy(original_128_key,key,key_len);
-			expandKey(original_128_key,expanded_128_key);
+			memcpy(original_256_key,key,key_len);
+			AES256::expandKey(original_256_key,expanded_256_key);
 			key_set = true;
 		}catch(int e){
 			cerr << "\033[1;31m\nCould not expand key\033[0m" << endl;		

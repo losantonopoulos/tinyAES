@@ -204,7 +204,7 @@ unsigned int AES128::encrypt(const uint8_t *temp_key, const uint8_t *src, uint8_
 	}
 	for(int8_t i=0;i<AES_128_ROWS;i++) tmp[i] = new uint8_t[AES_128_COLUMNS];
 
-	expandKey(key,expandedKey);
+	AES128::expandKey(key,expandedKey);
 
 	int remaining = (n_bytes % BLOCK_128_SIZE);
 	int n_blocks = (n_bytes / BLOCK_128_SIZE) + (remaining ? 1:0);
@@ -289,21 +289,21 @@ unsigned int AES128::encrypt(const uint8_t *src, uint8_t *dst, unsigned int n_by
 void AES128::encryptBlock(uint8_t *key,  uint8_t **expandedKey, uint8_t **tmp, const uint8_t *src,uint8_t *dst){
 
 	// Initial setup
-	convertToState(src,tmp);
-	addKey(key,tmp);
+	AES128::convertToState(src,tmp);
+	AES128::addKey(key,tmp);
 	
 	// ROUNDS 1-9
 	for(int8_t i=0;i<KEY_128_ROUNDS-1;i++){
-		substitute(tmp);
-		shiftRows(tmp);
-		mixColumns(tmp);
-		addKey(expandedKey[i],tmp);
+		AES128::substitute(tmp);
+		AES128::shiftRows(tmp);
+		AES128::mixColumns(tmp);
+		AES128::addKey(expandedKey[i],tmp);
 	}
 
 	// ROUND 10
-	substitute(tmp);
-	shiftRows(tmp);
-	addKey(expandedKey[KEY_128_ROUNDS-1],tmp);
+	AES128::substitute(tmp);
+	AES128::shiftRows(tmp);
+	AES128::addKey(expandedKey[KEY_128_ROUNDS-1],tmp);
 
 	for(int8_t i=0;i<AES_128_ROWS;i++) memcpy(&dst[i*AES_128_ROWS],&tmp[i][0],AES_128_COLUMNS);
 	
@@ -316,21 +316,21 @@ void AES128::encryptBlock(uint8_t *key,  uint8_t **expandedKey, uint8_t **tmp, c
 void AES128::encryptBlock(uint8_t **tmp, const uint8_t *src,uint8_t *dst){
 
 	// Initial setup
-	convertToState(src,tmp);
-	addKey(original_128_key,tmp);
+	AES128::convertToState(src,tmp);
+	AES128::addKey(original_128_key,tmp);
 	
 	// ROUNDS 1-9
 	for(int8_t i=0;i<KEY_128_ROUNDS-1;i++){
-		substitute(tmp);
-		shiftRows(tmp);
-		mixColumns(tmp);
-		addKey(expanded_128_key[i],tmp);
+		AES128::substitute(tmp);
+		AES128::shiftRows(tmp);
+		AES128::mixColumns(tmp);
+		AES128::addKey(expanded_128_key[i],tmp);
 	}
 
 	// ROUND 10
-	substitute(tmp);
-	shiftRows(tmp);
-	addKey(expanded_128_key[KEY_128_ROUNDS-1],tmp);
+	AES128::substitute(tmp);
+	AES128::shiftRows(tmp);
+	AES128::addKey(expanded_128_key[KEY_128_ROUNDS-1],tmp);
 
 	for(int8_t i=0;i<AES_128_ROWS;i++) memcpy(&dst[i*AES_128_ROWS],&tmp[i][0],AES_128_COLUMNS);
 	
@@ -368,7 +368,7 @@ unsigned int AES128::decrypt(const uint8_t *temp_key, const uint8_t *src, uint8_
 	}
 	for(int8_t i=0;i<AES_128_ROWS;i++) tmp[i] = new uint8_t[AES_128_COLUMNS];
 
-	expandKey(key,expandedKey);
+	AES128::expandKey(key,expandedKey);
 
 	int remaining = (n_bytes % BLOCK_128_SIZE);
 	int n_blocks = (n_bytes / BLOCK_128_SIZE) + (remaining ? 1:0);
@@ -451,23 +451,23 @@ unsigned int AES128::decrypt(const uint8_t *src,uint8_t *dst, unsigned int n_byt
 void AES128::decryptBlock(uint8_t *key,  uint8_t **expandedKey, uint8_t **tmp, const uint8_t *src,uint8_t *dst){
 
 	// Initial setup
-	convertToState(src,tmp);
+	AES128::convertToState(src,tmp);
 
 	// ROUND 10
-	addKey(expandedKey[KEY_128_ROUNDS-1],tmp);
-	invShiftRows(tmp);
-	invSubstitute(tmp);
+	AES128::addKey(expandedKey[KEY_128_ROUNDS-1],tmp);
+	AES128::invShiftRows(tmp);
+	AES128::invSubstitute(tmp);
 
 	// ROUNDS 9-1
 	for(int8_t i = KEY_128_ROUNDS-2;i>=0;i--){
-		addKey(expandedKey[i],tmp);
-		invMixColumns(tmp);
-		invShiftRows(tmp);
-		invSubstitute(tmp);	
+		AES128::addKey(expandedKey[i],tmp);
+		AES128::invMixColumns(tmp);
+		AES128::invShiftRows(tmp);
+		AES128::invSubstitute(tmp);	
 	}
 
 	// FINALLY
-	addKey(key,tmp);
+	AES128::addKey(key,tmp);
 	for(int8_t i=0;i<AES_128_ROWS;i++) memcpy(&dst[i*AES_128_ROWS],&tmp[i][0],AES_128_COLUMNS);
 
 	return;
@@ -476,23 +476,23 @@ void AES128::decryptBlock(uint8_t *key,  uint8_t **expandedKey, uint8_t **tmp, c
 void AES128::decryptBlock(uint8_t **tmp, const uint8_t *src, uint8_t *dst){
 
 	// Initial setup
-	convertToState(src,tmp);
+	AES128::convertToState(src,tmp);
 
 	// ROUND 10
-	addKey(expanded_128_key[KEY_128_ROUNDS-1],tmp);
-	invShiftRows(tmp);
-	invSubstitute(tmp);
+	AES128::addKey(expanded_128_key[KEY_128_ROUNDS-1],tmp);
+	AES128::invShiftRows(tmp);
+	AES128::invSubstitute(tmp);
 
 	// ROUNDS 9-1
 	for(int8_t i = KEY_128_ROUNDS-2;i>=0;i--){
-		addKey(expanded_128_key [i],tmp);
-		invMixColumns(tmp);
-		invShiftRows(tmp);
-		invSubstitute(tmp);	
+		AES128::addKey(expanded_128_key [i],tmp);
+		AES128::invMixColumns(tmp);
+		AES128::invShiftRows(tmp);
+		AES128::invSubstitute(tmp);	
 	}
 
 	// FINALLY
-	addKey(original_128_key,tmp);
+	AES128::addKey(original_128_key,tmp);
 	for(int8_t i=0;i<AES_128_ROWS;i++) memcpy(&dst[i*AES_128_ROWS],&tmp[i][0],AES_128_COLUMNS);
 
 	return;
@@ -783,7 +783,7 @@ bool AES128::setKey(uint8_t *key){
 
 	try{
 		memcpy(original_128_key,key,BLOCK_128_SIZE);
-		expandKey(original_128_key,expanded_128_key);
+		AES128::expandKey(original_128_key,expanded_128_key);
 		key_set = true;
 	}catch(int e){
 		cerr << "\033[1;31m\nCould not expand key\033[0m" << endl;		
@@ -810,7 +810,7 @@ bool AES128::setUserKey(char *key){
 
 		try{
 			memcpy(original_128_key,key,BLOCK_128_SIZE);
-			expandKey(original_128_key,expanded_128_key);
+			AES128::expandKey(original_128_key,expanded_128_key);
 			key_set = true;
 		}catch(int e){
 			cerr << "\033[1;31m\nCould not expand key\033[0m" << endl;		
@@ -826,7 +826,7 @@ bool AES128::setUserKey(char *key){
 
 		try{
 			memcpy(original_128_key,key,key_len);
-			expandKey(original_128_key,expanded_128_key);
+			AES128::expandKey(original_128_key,expanded_128_key);
 			key_set = true;
 		}catch(int e){
 			cerr << "\033[1;31m\nCould not expand key\033[0m" << endl;		

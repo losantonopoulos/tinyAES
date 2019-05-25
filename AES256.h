@@ -8,18 +8,18 @@
 #define BLOCK_256_SIZE 	   16
 #define SMALL_KEY_256_SIZE	6		
 #define KEY_256_SIZE       16
-#define KEY_128_ROUNDS     10
-#define AES_128_COLUMNS		4
-#define AES_128_ROWS		4
+#define KEY_256_ROUNDS     10
+#define AES_256_COLUMNS		4
+#define AES_256_ROWS		4
 
-class AES128 {
+class AES256 {
 	public:
 			
 		/*
 			Arguments:
-				key		- An 128bit key for encryption
-				src		- Byte Array[BLOCK_128_SIZE] containing input data
-				dst		- Byte Array[BLOCK_128_SIZE] containing output data
+				key		- An 256bit key for encryption
+				src		- Byte Array[BLOCK_256_SIZE] containing input data
+				dst		- Byte Array[BLOCK_256_SIZE] containing output data
 
 			This is the function which is used for encryption of data.
 			In order for this function to work you must specify a key. 
@@ -31,8 +31,8 @@ class AES128 {
 		/*
 			Arguments:
 				key		- An 128bit key for encryption
-				src		- Byte Array[BLOCK_128_SIZE] containing input data
-				dst		- Byte Array[BLOCK_128_SIZE] containing output data
+				src		- Byte Array[BLOCK_256_SIZE] containing input data
+				dst		- Byte Array[BLOCK_256_SIZE] containing output data
 
 			This is the function which is used for decryption of data.
 			In order for this function to work you must specify a key. 
@@ -43,8 +43,8 @@ class AES128 {
 
 		/*
 			Arguments:
-				src		- Byte Array[BLOCK_128_SIZE] containing input data
-				dst		- Byte Array[BLOCK_128_SIZE] containing output data
+				src		- Byte Array[BLOCK_256_SIZE] containing input data
+				dst		- Byte Array[BLOCK_256_SIZE] containing output data
 
 			This is the function which is used for encryption of data 
 			by using the key set with the setkey(key) function.  
@@ -53,8 +53,8 @@ class AES128 {
 
 		/*
 			Arguments:
-				src		- Byte Array[BLOCK_128_SIZE] containing input data
-				dst		- Byte Array[BLOCK_128_SIZE] containing output data
+				src		- Byte Array[BLOCK_256_SIZE] containing input data
+				dst		- Byte Array[BLOCK_256_SIZE] containing output data
 
 			This is the function which is used for encryption of data 
 			by using the key set with the setkey(key) function.  
@@ -78,12 +78,12 @@ class AES128 {
 		void printData(uint8_t *key);
 		
 		/**/
-		AES128();
+		AES256();
 
 	private:
 		// PRIVATE VARIABLES
-		uint8_t **expanded_128_key;
-		uint8_t *original_128_key;
+		uint8_t **expanded_256_key;
+		uint8_t *original_256_key;
 		bool initialized = false;
 		bool key_set	  = false;
 
