@@ -1,13 +1,13 @@
-#ifndef __AES128_H__
-#define __AES128_H__
+#ifndef __AES256_H__
+#define __AES256_H__
 
 #include <cstdint>
 #include <cinttypes>
 
 // IN #BYTES
-#define BLOCK_128_SIZE 	   16
-#define SMALL_KEY_128_SIZE	6		
-#define KEY_128_SIZE       16
+#define BLOCK_256_SIZE 	   16
+#define SMALL_KEY_256_SIZE	6		
+#define KEY_256_SIZE       16
 #define KEY_128_ROUNDS     10
 #define AES_128_COLUMNS		4
 #define AES_128_ROWS		4

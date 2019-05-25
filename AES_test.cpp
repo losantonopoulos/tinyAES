@@ -1,4 +1,4 @@
-#include "AES.h"
+#include "AES256.h"
 #include <iostream>
 #include <stdio.h>
 #include <cstdint>
@@ -34,7 +34,7 @@ int main(int argc, char **argv){
 		return -2;
 	}
 
-	AES myAES;
+	AES256 myAES;
 	myAES.setKey(my_key);
 	if(!myAES.setUserKey(argv[1])) return -1;
 
