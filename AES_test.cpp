@@ -1,10 +1,10 @@
-#include "AES128.h"
-#include "AES256.h"
 #include <iostream>
 #include <stdio.h>
 #include <cstdint>
 #include <cstring>
 #include <cinttypes>
+
+#include "AES128.h"
 
 using namespace std;
 
@@ -35,7 +35,7 @@ int main(int argc, char **argv){
 		return -2;
 	}
 
-	AES256 myAES128;
+	AES128 myAES128;
 	myAES128.setKey(my_key);
 	if(!myAES128.setUserKey(argv[1])) return -1;
 
